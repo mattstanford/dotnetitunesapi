@@ -32,11 +32,23 @@ namespace iTunesTest
             String url = "https://itunes.apple.com/search?term=karma%20police&attribute=songTerm&entity=album";
             var json = new WebClient().DownloadString(url);
 
-           // Dictionary<string, string> deserialized = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            iTunesResult deserialized = JsonConvert.DeserializeObject<iTunesResult>(json);
 
             TestLabel.Content = "Clicked!";
 
         }
 
+    }
+
+    public class iTunesResult
+    {
+        public string resultCount { get; set; }
+        public iTunesAttribute[] results {get; set; }
+    }
+
+    public class iTunesAttribute
+    {
+        public String artworkUrl60 { get; set; }
+        public String artworkUrl100 { get; set; }
     }
 }
