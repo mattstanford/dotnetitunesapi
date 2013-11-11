@@ -34,8 +34,24 @@ namespace iTunesTest
 
             iTunesResult deserialized = JsonConvert.DeserializeObject<iTunesResult>(json);
 
+            //For now take the first image returned and set it in our image view
+            String imageUrl = deserialized.results[0].artworkUrl100;
+
+            setImageToUrl(imageUrl);
+
             TestLabel.Content = "Clicked!";
 
+        } 
+
+        private void setImageToUrl(String url)
+        {
+            BitmapImage urlImage = new BitmapImage();
+
+            urlImage.BeginInit();
+            urlImage.UriSource = new Uri(url, UriKind.RelativeOrAbsolute);
+            urlImage.EndInit();
+
+            CoverArtImage.Source = urlImage;
         }
 
     }
@@ -51,4 +67,6 @@ namespace iTunesTest
         public String artworkUrl60 { get; set; }
         public String artworkUrl100 { get; set; }
     }
+
+
 }
