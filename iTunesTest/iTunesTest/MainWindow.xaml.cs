@@ -33,18 +33,24 @@ namespace iTunesTest
             var json = new WebClient().DownloadString(url);
 
             iTunesResult deserialized = JsonConvert.DeserializeObject<iTunesResult>(json);
-            List<iTunesAttribute> resultsForArtist = getResultsForArtist(deserialized, @"Radiohead");
-            String imageUrl = resultsForArtist[0].artworkUrl100;
+            
+            //Filter tracks by artist
+            List<iTunesTrack> resultsForArtist = getResultsForArtist(deserialized, @"Radiohead");
+
+            //Get the oldest track (filters out all the "best of" albums, etc.)
+            iTunesTrack oldestTrack = getOldestTitle(resultsForArtist);
+
+            String imageUrl = oldestTrack.artworkUrl100;
 
             setImageToUrl(imageUrl);
 
         }
 
-        private List<iTunesAttribute> getResultsForArtist(iTunesResult data, String artist)
+        private List<iTunesTrack> getResultsForArtist(iTunesResult data, String artist)
         {
-            List<iTunesAttribute> returnList = new List<iTunesAttribute>();
+            List<iTunesTrack> returnList = new List<iTunesTrack>();
 
-            foreach (iTunesAttribute result in data.results)
+            foreach (iTunesTrack result in data.results)
             {
                 if(result.artistName.Equals(artist))
                 {
@@ -53,6 +59,26 @@ namespace iTunesTest
             }
 
             return returnList;
+        }
+
+        private iTunesTrack getOldestTitle(List<iTunesTrack> resultList)
+        {
+            iTunesTrack oldestTrack = null;
+            DateTime oldestTrackDate = DateTime.Now;
+
+            foreach(iTunesTrack result in resultList)
+            {
+                DateTime trackDate = Convert.ToDateTime(result.releaseDate);
+
+                if(DateTime.Compare(trackDate, oldestTrackDate) < 0)
+                {
+                    oldestTrackDate = trackDate;
+                    oldestTrack = result;
+                }
+            }
+
+            return oldestTrack;
+
         }
 
         private void setImageToUrl(String url)
@@ -71,14 +97,15 @@ namespace iTunesTest
     public class iTunesResult
     {
         public string resultCount { get; set; }
-        public iTunesAttribute[] results {get; set; }
+        public iTunesTrack[] results {get; set; }
     }
 
-    public class iTunesAttribute
+    public class iTunesTrack
     {
         public String artworkUrl60 { get; set; }
         public String artworkUrl100 { get; set; }
         public String artistName { get; set; }
+        public String releaseDate { get; set; }
     }
 
 
