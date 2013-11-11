@@ -33,15 +33,27 @@ namespace iTunesTest
             var json = new WebClient().DownloadString(url);
 
             iTunesResult deserialized = JsonConvert.DeserializeObject<iTunesResult>(json);
-
-            //For now take the first image returned and set it in our image view
-            String imageUrl = deserialized.results[0].artworkUrl100;
+            List<iTunesAttribute> resultsForArtist = getResultsForArtist(deserialized, @"Radiohead");
+            String imageUrl = resultsForArtist[0].artworkUrl100;
 
             setImageToUrl(imageUrl);
 
-            TestLabel.Content = "Clicked!";
+        }
 
-        } 
+        private List<iTunesAttribute> getResultsForArtist(iTunesResult data, String artist)
+        {
+            List<iTunesAttribute> returnList = new List<iTunesAttribute>();
+
+            foreach (iTunesAttribute result in data.results)
+            {
+                if(result.artistName.Equals(artist))
+                {
+                    returnList.Add(result);
+                }
+            }
+
+            return returnList;
+        }
 
         private void setImageToUrl(String url)
         {
@@ -66,6 +78,7 @@ namespace iTunesTest
     {
         public String artworkUrl60 { get; set; }
         public String artworkUrl100 { get; set; }
+        public String artistName { get; set; }
     }
 
 
